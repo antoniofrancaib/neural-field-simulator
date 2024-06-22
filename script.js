@@ -1,18 +1,38 @@
 document.getElementById('startBtn').addEventListener('click', function() {
     const connectivity = document.getElementById('connectivity').value;
-    startSimulation(connectivity);
+    fetch('http://localhost:5000/simulate', {  // Ensure the URL matches your Flask server URL
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ connectivity: connectivity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Simulation results:', data);
+        plotResults(data.time, data.activities);
+    })
+    .catch(error => console.error('Error:', error));
 });
 
-function startSimulation(connectivity) {
-    console.log("Simulation started with connectivity:", connectivity);
-    // Assuming canvas context and simulation details to be implemented here
-    const canvas = document.getElementById('simulationCanvas');
-    const ctx = canvas.getContext('2d');
-    // Clear previous drawing
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    // Simple example of using connectivity to draw
-    ctx.fillStyle = `rgba(0, 0, 255, ${connectivity})`; // Opacity based on connectivity
-    ctx.fillRect(10, 10, 100, 100);
-}
+function plotResults(time, activities) {
+    var data = [{
+        z: activities,
+        type: 'surface'
+    }];
 
-// More complex simulation functions can be added here
+    var layout = {
+        title: 'Neural Field Simulation',
+        autosize: false,
+        width: 500,
+        height: 500,
+        margin: {
+            l: 65,
+            r: 50,
+            b: 65,
+            t: 90,
+        }
+    };
+
+    Plotly.newPlot('plot', data, layout);
+}
