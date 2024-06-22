@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Field Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Neural Field Simulator</h1>
+    </header>
+    <main>
+        <div id="controls">
+            <label for="connectivity">Connectivity:</label>
+            <input type="range" id="connectivity" min="0" max="1" step="0.01" value="0.5">
+            <button id="startBtn">Start Simulation</button>
+        </div>
+        <div id="output">
+            <canvas id="simulationCanvas"></canvas>
+        </div>
+    </main>
+    <footer>
+        <p>Created by Your Name</p>
+    </footer>
+    <script src="script.js"></script>
+</body>
+</html>
