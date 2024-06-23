@@ -1,27 +1,33 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from common_utils import create_synthetic_data, Simulator
-import numpy as np
+from flask import Flask, request, jsonify, send_file
+import io
+import base64
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from common_utils import Simulator, create_synthetic_data
 
 app = Flask(__name__)
-CORS(app)  # This is needed for cross-origin requests if your front-end and back-end are served on different ports or domains.
 
-@app.route('/simulate', methods=['POST'])
+# Create synthetic data
+num_radial_segments = 10
+num_angular_segments = 10
+radial_bounds = (0, 1)
+angular_bounds = (0, 2 * np.pi)
+nodes, triangles = create_synthetic_data(num_radial_segments, num_angular_segments, radial_bounds, angular_bounds)
+simulator = Simulator(nodes, triangles)
+
+@app.route('/simulate', methods=['GET'])
 def simulate():
-    data = request.json
-    connectivity = float(data.get('connectivity', 0.5))
+    timestep = request.args.get('timestep', default=-1, type=int)
+    fig = simulator.plot_activity(timestep)
 
-    # Generate synthetic data
-    N, E = create_synthetic_data(num_radial_segments=10, num_angular_segments=10)
-    M = np.random.rand(len(N), len(N)) * connectivity  # Dummy matrix for connectivity
+    # Save figure to a BytesIO object
+    img = io.BytesIO()
+    FigureCanvas(fig).print_png(img)
+    img.seek(0)
 
-    # Initialize simulator with synthetic matrices
-    simulator = Simulator(N, E, M)
-    time, activities = simulator.simulate(T=50)
+    # Encode image in base64
+    img_base64 = base64.b64encode(img.getvalue()).decode('utf-8')
 
-    # Convert results to a list for JSON serialization
-    results = activities.tolist()
-    return jsonify({'time': time.tolist(), 'activities': results})
+    return jsonify({'image': img_base64})
 
 if __name__ == '__main__':
     app.run(debug=True)
