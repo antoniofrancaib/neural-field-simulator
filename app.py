@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, send_file, send_from_directory
+from flask import Flask, request, jsonify, send_file
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,33 +9,21 @@ import logging
 app = Flask(__name__)
 logging.basicConfig(level=logging.DEBUG)
 
+DATA_FOLDER = 'data'
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
 
 simulator = None
 
-@app.route('/')
-def index():
-    return send_file('index.html')
-
-@app.route('/upload', methods=['POST'])
-def upload_files():
+def initialize_simulator():
     global simulator
 
-    nodes_file = request.files['nodes']
-    elements_file = request.files['elements']
-    synaptic_matrix_file = request.files['synaptic_matrix']
+    nodes_path = os.path.join(DATA_FOLDER, 'nodes.dat')
+    elements_path = os.path.join(DATA_FOLDER, 'elements.dat')
+    synaptic_matrix_path = os.path.join(DATA_FOLDER, 'synaptic-matrix.mat')
 
-    nodes_path = os.path.join(UPLOAD_FOLDER, nodes_file.filename)
-    elements_path = os.path.join(UPLOAD_FOLDER, elements_file.filename)
-    synaptic_matrix_path = os.path.join(UPLOAD_FOLDER, synaptic_matrix_file.filename)
-
-    nodes_file.save(nodes_path)
-    elements_file.save(elements_path)
-    synaptic_matrix_file.save(synaptic_matrix_path)
-
-    logging.debug(f"Files uploaded: {nodes_path}, {elements_path}, {synaptic_matrix_path}")
+    logging.debug(f"Loading files: {nodes_path}, {elements_path}, {synaptic_matrix_path}")
 
     try:
         N = np.loadtxt(nodes_path)
@@ -43,11 +31,13 @@ def upload_files():
         synaptic_matrix = loadmat(synaptic_matrix_path)['W']
 
         simulator = Simulator(N, E, synaptic_matrix)
-        logging.debug("Simulator initialized successfully")
-        return jsonify({"message": "Files uploaded and simulator initialized successfully!"})
+        logging.debug("Simulator initialized successfully with default files")
     except Exception as e:
         logging.error(f"Error initializing simulator: {e}")
-        return jsonify({"message": "Error initializing simulator", "error": str(e)}), 500
+
+@app.route('/')
+def index():
+    return send_file('index.html')
 
 @app.route('/plot', methods=['GET'])
 def plot_activity():
@@ -83,7 +73,8 @@ def plot_activity():
 
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename)
+    return send_file(os.path.join(UPLOAD_FOLDER, filename))
 
 if __name__ == '__main__':
+    initialize_simulator()
     app.run(debug=True)
