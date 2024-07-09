@@ -1,49 +1,19 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #b3d9df;
-    color: #333;
-    margin: 0;
-    padding: 0;
+    text-align: center;
+    margin: 20px;
 }
-header {
-    background-color: #8ac6d1;
-    padding: 10px;
-}
-nav a {
-    margin: 0 10px;
-    text-decoration: none;
-    color: #333;
-}
-nav a.active {
-    color: #ff7f50;
-}
-main {
-    padding: 20px;
-}
-h1 {
-    font-size: 24px;
-}
-.controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 20px;
-}
-.controls div {
+
+div {
     margin-bottom: 10px;
 }
-#simulation {
-    text-align: center;
+
+button {
+    padding: 10px 20px;
+    margin-top: 10px;
 }
-#simulation img {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    border: 1px solid #ddd;
-}
-.color-map {
-    margin-top: 20px;
-}
-.color-map p {
-    margin-bottom: 5px;
+
+#plotContainer {
+    width: 80%;
+    margin: 0 auto;
 }

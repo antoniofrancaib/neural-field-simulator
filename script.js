@@ -1,50 +1,41 @@
-document.addEventListener("DOMContentLoaded", function() {
-    const simulateButton = document.getElementById('simulate');
-    const resetButton = document.getElementById('reset');
-    const firingThresholdSlider = document.getElementById('firing-threshold');
-    const adaptivitySlider = document.getElementById('adaptivity');
-    const simulationImage = document.getElementById('simulationImage');
-    const colorMapRadios = document.getElementsByName('colormap');
+document.getElementById('uploadBtn').addEventListener('click', async () => {
+    const nodesFile = document.getElementById('nodesFile').files[0];
+    const elementsFile = document.getElementById('elementsFile').files[0];
+    const synapticMatrixFile = document.getElementById('synapticMatrixFile').files[0];
 
-    function getSelectedColorMap() {
-        for (let radio of colorMapRadios) {
-            if (radio.checked) {
-                return radio.value;
-            }
+    const formData = new FormData();
+    formData.append('nodes', nodesFile);
+    formData.append('elements', elementsFile);
+    formData.append('synaptic_matrix', synapticMatrixFile);
+
+    try {
+        const response = await fetch('/upload', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (response.ok) {
+            alert('Files uploaded successfully!');
+            updatePlot(0); // Plot initial state after upload
+        } else {
+            alert('Error uploading files.');
         }
+    } catch (error) {
+        console.error('Error uploading files:', error);
     }
-
-    function updateSimulation() {
-        const timestep = 0; // Set this value based on your logic
-        const firingThreshold = firingThresholdSlider.value;
-        const adaptivity = adaptivitySlider.value;
-        const colorMap = getSelectedColorMap();
-
-        fetch(`https://your-heroku-app.herokuapp.com/simulate?timestep=${timestep}&firing_threshold=${firingThreshold}&adaptivity=${adaptivity}&colormap=${colorMap}`)
-            .then(response => response.json())
-            .then(data => {
-                simulationImage.src = 'data:image/png;base64,' + data.image;
-            });
-    }
-
-    simulateButton.addEventListener('click', updateSimulation);
-    resetButton.addEventListener('click', function() {
-        firingThresholdSlider.value = 5;
-        adaptivitySlider.value = 5;
-        updateSimulation();
-    });
-
-    // Presets buttons logic
-    document.getElementById('localized-spots').addEventListener('click', function() {
-        // Your logic to apply localized spots preset
-        updateSimulation();
-    });
-    document.getElementById('traveling-waves').addEventListener('click', function() {
-        // Your logic to apply traveling waves preset
-        updateSimulation();
-    });
-    // Add similar event listeners for other preset buttons
-
-    // Initialize the simulation on page load
-    updateSimulation();
 });
+
+document.getElementById('timestepRange').addEventListener('input', (event) => {
+    const timestep = event.target.value;
+    updatePlot(timestep);
+});
+
+async function updatePlot(timestep) {
+    try {
+        const response = await fetch(`/plot?timestep=${timestep}`);
+        const plotHtml = await response.text();
+        document.getElementById('plotContainer').innerHTML = plotHtml;
+    } catch (error) {
+        console.error('Error fetching plot:', error);
+    }
+}

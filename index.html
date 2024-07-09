@@ -3,57 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neural Field Simulation</title>
+    <title>Neural Simulation</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <nav>
-            <a href="#">OLLY. WEBSITE</a>
-            <a href="#">ABOUT ME</a>
-            <a href="#" class="active">SIMULATIONS</a>
-        </nav>
-    </header>
-    <main>
-        <h1>Neural Field Simulation</h1>
-        <p>This is an interactive example of a neural field: a mathematical model of the patterns of electrical activity seen in neural tissue. Drag the cursor over the surface to add electrical impulses, and watch the patterns of synaptic activity grow. Scroll down for a technical description of the model.</p>
-        
-        <div class="controls">
-            <button id="reset">Reset</button>
-            
-            <div>
-                <label for="firing-threshold">Firing threshold h:</label>
-                <input type="range" id="firing-threshold" min="0" max="10" step="0.1" value="5">
-            </div>
-            
-            <div>
-                <label for="adaptivity">Adaptivity g:</label>
-                <input type="range" id="adaptivity" min="0" max="10" step="0.1" value="5">
-            </div>
-            
-            <div>
-                <p>Presets:</p>
-                <button id="localized-spots">Localized spots</button>
-                <button id="traveling-waves">Traveling waves</button>
-                <button id="growing-spots">Growing spots</button>
-                <button id="concentric">Concentric</button>
-                <button id="spiral">Spiral</button>
-                <button id="bars">Bars</button>
-            </div>
-        </div>
-
-        <div id="simulation">
-            <img id="simulationImage" src="" alt="Simulation Result" />
-        </div>
-        
-        <div class="color-map">
-            <p>Choose color map:</p>
-            <label><input type="radio" name="colormap" value="rainbow" checked> Rainbow</label>
-            <label><input type="radio" name="colormap" value="viridis"> Viridis</label>
-            <label><input type="radio" name="colormap" value="bw"> Black and white</label>
-            <label><input type="radio" name="colormap" value="blues"> Blues</label>
-        </div>
-    </main>
+    <h1>Neural Simulation</h1>
+    <div>
+        <label for="nodesFile">Nodes File:</label>
+        <input type="file" id="nodesFile" accept=".dat">
+    </div>
+    <div>
+        <label for="elementsFile">Elements File:</label>
+        <input type="file" id="elementsFile" accept=".dat">
+    </div>
+    <div>
+        <label for="synapticMatrixFile">Synaptic Matrix File:</label>
+        <input type="file" id="synapticMatrixFile" accept=".mat">
+    </div>
+    <button id="uploadBtn">Upload Files</button>
+    <div>
+        <label for="timestepRange">Timestep:</label>
+        <input type="range" id="timestepRange" min="0" max="4999" value="0">
+    </div>
+    <div id="plotContainer"></div>
     <script src="script.js"></script>
 </body>
 </html>
