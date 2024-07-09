@@ -36,8 +36,8 @@ async function updatePlot(timestep) {
     try {
         const response = await fetch(`/plot?timestep=${timestep}`);
         if (response.ok) {
-            const plotHtml = await response.text();
-            document.getElementById('plotContainer').innerHTML = plotHtml;
+            const plotUrl = await response.json();
+            document.getElementById('plotImage').src = plotUrl.url;
         } else {
             const error = await response.json();
             alert(`Error: ${error.message}`);

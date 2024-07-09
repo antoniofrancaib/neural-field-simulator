@@ -1,7 +1,7 @@
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, jsonify, send_file, send_from_directory
 import os
 import numpy as np
-import plotly.express as px
+import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from common_utils import Simulator
 import logging
@@ -62,14 +62,28 @@ def plot_activity():
         X, Y, Z = simulator.N[:, 0], simulator.N[:, 1], simulator.N[:, 2]
         activities = R_t[:, timestep]
 
-        fig = px.scatter_3d(x=X, y=Y, z=Z, color=activities)
-        fig.update_layout(title=f'Neural Activity at Timestep {timestep}')
-        plot_html = fig.to_html(full_html=False)
-        logging.debug("Plot generated successfully")
-        return render_template_string(plot_html)
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        scatter = ax.scatter(X, Y, Z, c=activities, cmap='viridis', edgecolor='k', s=50)
+        cbar = plt.colorbar(scatter)
+        cbar.set_label('Neural Activity', rotation=270, labelpad=15)
+        ax.set_xlabel('X Coordinate')
+        ax.set_ylabel('Y Coordinate')
+        ax.set_zlabel('Z Coordinate')
+        plt.title(f'Neural Activity at Time Step {timestep}')
+        
+        plot_path = os.path.join(UPLOAD_FOLDER, 'plot.png')
+        plt.savefig(plot_path)
+        plt.close()
+
+        return jsonify({"url": f"/uploads/plot.png"})
     except Exception as e:
         logging.error(f"Error generating plot: {e}")
         return jsonify({"message": "Error generating plot", "error": str(e)}), 500
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(UPLOAD_FOLDER, filename)
 
 if __name__ == '__main__':
     app.run(debug=True)

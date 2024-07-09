@@ -20,12 +20,14 @@
         <label for="synapticMatrixFile">Synaptic Matrix File:</label>
         <input type="file" id="synapticMatrixFile" accept=".mat">
     </div>
-    <button id="uploadBtn">Upload Files</button>
+    <button id="uploadBtn">Upload Files and Plot</button>
     <div>
         <label for="timestepRange">Timestep:</label>
         <input type="range" id="timestepRange" min="0" max="4999" value="0">
     </div>
-    <div id="plotContainer"></div>
+    <div id="plotContainer">
+        <img id="plotImage" src="" alt="Neural Activity Plot" />
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

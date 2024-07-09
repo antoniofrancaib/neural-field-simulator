@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
     text-align: center;
+    background-color: #b0d4d4;
     margin: 20px;
 }
 
@@ -16,4 +17,9 @@ button {
 #plotContainer {
     width: 80%;
     margin: 0 auto;
+}
+
+#plotImage {
+    width: 100%;
+    height: auto;
 }
