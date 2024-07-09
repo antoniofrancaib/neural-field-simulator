@@ -15,10 +15,12 @@ document.getElementById('uploadBtn').addEventListener('click', async () => {
         });
 
         if (response.ok) {
-            alert('Files uploaded successfully!');
+            const result = await response.json();
+            alert(result.message);
             updatePlot(0); // Plot initial state after upload
         } else {
-            alert('Error uploading files.');
+            const error = await response.json();
+            alert(`Error: ${error.message}`);
         }
     } catch (error) {
         console.error('Error uploading files:', error);
@@ -33,8 +35,13 @@ document.getElementById('timestepRange').addEventListener('input', (event) => {
 async function updatePlot(timestep) {
     try {
         const response = await fetch(`/plot?timestep=${timestep}`);
-        const plotHtml = await response.text();
-        document.getElementById('plotContainer').innerHTML = plotHtml;
+        if (response.ok) {
+            const plotHtml = await response.text();
+            document.getElementById('plotContainer').innerHTML = plotHtml;
+        } else {
+            const error = await response.json();
+            alert(`Error: ${error.message}`);
+        }
     } catch (error) {
         console.error('Error fetching plot:', error);
     }
